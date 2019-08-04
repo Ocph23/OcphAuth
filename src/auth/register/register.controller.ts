@@ -15,7 +15,7 @@ export class RegisterController {
 
 
   @Post('create')
-  async create(@Body() model: any): Promise<boolean> {
+  async create(@Body() model: any) {
     try {
       return await this.authService.register(model);
     } catch (ex) {

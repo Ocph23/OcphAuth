@@ -1,0 +1,43 @@
+############
+
+POST http://localhost:3000/developer/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "userName": "Ocph23@gmail.com",
+  "password": "Sony@77",
+  "developerProfile":{
+    "email": "Ocph23@gmail.com"
+  }
+}
+
+####
+
+POST http://localhost:3000/developer/login HTTP/1.1
+content-type: application/json
+
+ {"userName": "Ocph23@gmail.com", "password": "Sony@77"}
+
+####
+
+GET  http://localhost:3000/developer/me HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkNDc1NmJhYWM1MDc2MDlhYzMzMmJhNSIsInVzZXJOYW1lIjoiT2NwaDIzQGdtYWlsLmNvbSIsImlhdCI6MTU2NDk1NjQ2NywiZXhwIjoxNTY3NTQ4NDY3fQ.KtzqGpHZL2qTF72DQlqNWE6BPrVrRNtDBWYilBrD6I4
+
+
+####
+
+GET  http://localhost:3000/developer/IsLoged HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkNDc0MmZmYWY0NGE0MTk4NGQxMjJhMyIsInVzZXJOYW1lIjoiT2NwaDIzQGdtYWlsLmNvbSIsImlhdCI6MTU2NDk1MjAyNCwiZXhwIjoxNTY0OTUzMDI0fQ.HelJdCM_gLEjRbPkXOi5418EY0XWEar7sK5vpO77sVA
+
+###
+POST http://localhost:3000/developer/createapp HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkNDc1NmJhYWM1MDc2MDlhYzMzMmJhNSIsInVzZXJOYW1lIjoiT2NwaDIzQGdtYWlsLmNvbSIsImlhdCI6MTU2NDk1NjQ2NywiZXhwIjoxNTY3NTQ4NDY3fQ.KtzqGpHZL2qTF72DQlqNWE6BPrVrRNtDBWYilBrD6I4
+
+
+{
+      "name": "My New App 2",
+      "description": "Applikasi Test"
+}

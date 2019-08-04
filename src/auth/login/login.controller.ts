@@ -15,6 +15,13 @@ export class LoginController {
     @UseGuards(AuthGuard('jwt'))
     @Get('me')
     getProfile(@Request() req) {
-      return req.user;
+        return this.authService.profile(req.user);
+    }
+
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get('IsLoged')
+    getLoged(@Request() req) {
+        return true;
     }
 }

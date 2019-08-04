@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const options = new DocumentBuilder()
-  .setTitle('Cats example')
-  .setDescription('The cats API description')
+  .setTitle('Stimik Auth App')
+  .setDescription('Stimik Auth')
   .setVersion('1.0')
   .addTag('Auth')
   .build();

@@ -1,0 +1,30 @@
+############
+
+POST http://localhost:3000/register/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "npm": "201511099",
+  "userName": "Ocph23",
+  "email": "Ocph23@gmail.com",
+  "password": "Sony@77",
+  "confirmPassword": "Sony@77"
+}
+
+####
+
+POST http://localhost:3000/auth/login HTTP/1.1
+content-type: application/json
+
+ {"userName": "Ocph23", "password": "Sony@77"}
+
+####
+
+GET  http://localhost:3000/auth/me HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJucG0iOiIyMDE1MTEwOTkiLCJ1c2VyTmFtZSI6Ik9jcGgyMyIsImlhdCI6MTU2NDk0MjQ1MCwiZXhwIjoxNTY0OTQzNDUwfQ.vKn4M667Dmx5rTA08Ah_AQsjzH8Novk-IX4f64iYCD4
+####
+
+GET  http://localhost:3000/auth/IsLoged HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJucG0iOiIyMDE1MTEwOTkiLCJ1c2VyTmFtZSI6Ik9jcGgyMyIsImlhdCI6MTU2NDk0MjQ1MCwiZXhwIjoxNTY0OTQzNDUwfQ.vKn4M667Dmx5rTA08Ah_AQsjzH8Novk-IX4f64iYCD4

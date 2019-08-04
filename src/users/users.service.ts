@@ -10,7 +10,6 @@ export class UsersService {
     }
     async insert(data:UsersDto):Promise<UsersDto>
     {
-      
       const model = new this.userModel(data as UsersDto);
       return await model.save();
     }

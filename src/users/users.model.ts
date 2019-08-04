@@ -1,9 +1,7 @@
 export class UsersModel{
-    firstName:string;
-    lastName:string;
     userName: string;
+    npm:string;
     email : string;
     password: string;
     confirmPassword: string;
-    passwordHash: string;
 };
