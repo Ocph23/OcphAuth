@@ -10,7 +10,8 @@ export class UsersService {
     }
     async insert(data:UsersDto):Promise<UsersDto>
     {
-      const model = new this.userModel(data);
+      
+      const model = new this.userModel(data as UsersDto);
       return await model.save();
     }
     
@@ -19,7 +20,8 @@ export class UsersService {
     }
 
     async findOne(param:any):Promise<UsersDto>{
-      return await this.userModel.findOne(param).exec();
+     const data= await this.userModel.findOne(param).exec();
+     return data;
     }
 
 
