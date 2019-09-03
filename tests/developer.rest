@@ -41,3 +41,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkNDc1NmJhY
       "name": "My New App 2",
       "description": "Applikasi Test"
 }
+
+###
+
+Get  http://localhost:3000/developer/newpppkey?id=13123 HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkNDc1NmJhYWM1MDc2MDlhYzMzMmJhNSIsInVzZXJOYW1lIjoiT2NwaDIzQGdtYWlsLmNvbSIsImlhdCI6MTU2NTE5NzQ1NywiZXhwIjoxNTY3Nzg5NDU3fQ.iqZB7EFXBrDO9shL6txsTcxhQI56fsXa0WLGqjwVrzE

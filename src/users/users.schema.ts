@@ -1,14 +1,18 @@
 import * as mongoose from 'mongoose';
 
 const schema = new mongoose.Schema({
-  npm:String,
+  firstName:String,
+  lastName:String,
+  identityNumber:String,
   userName: String,
   passwordHash: String,
   email : String,
+  roles:[],
+  profiles:[],
 });
 
 schema.index({
-  npm:1,
+  identityNumber:1,
   userName: 1,
   email: 1,
 }, {

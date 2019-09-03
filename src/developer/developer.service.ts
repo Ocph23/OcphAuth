@@ -7,6 +7,9 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class DeveloperService {
+  generateNewAppKey(user: any, appid: any) {
+    throw new Error("Method not implemented.");
+  }
   constructor(
     private readonly jwtService: JwtService,
     @InjectModel('Developers') private readonly userModel: Model<DeveloperDto>,
