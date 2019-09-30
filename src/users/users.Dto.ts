@@ -1,12 +1,5 @@
 import { Document } from 'mongoose';
-export interface UsersDto extends Document {
-    firstName:string;
-    lastName:string;
-    userName: string;
-    identityNumber:string;
-    email: string;
+import { IUsersModel } from './users.model';
+export interface UsersDto extends  IUsersModel,Document {
     passwordHash: string;
-    roles:string [];
-    role:string;
-    profiles:any[];
 }

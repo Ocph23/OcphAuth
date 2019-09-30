@@ -1,78 +1,129 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DeveloperDto } from './developer.Dto';
 import { Model } from 'mongoose';
 import { AES, enc } from 'crypto-ts';
-import { JwtService } from '@nestjs/jwt';
+import { jwtConstants } from '../constants';
+import { DeveleporDTO, AppDTO } from './developer.dto';
+import { IDeveloperModel, IUserApplication } from './developer.model';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class DeveloperService {
-  generateNewAppKey(user: any, appid: any) {
-    throw new Error("Method not implemented.");
-  }
   constructor(
-    private readonly jwtService: JwtService,
-    @InjectModel('Developers') private readonly userModel: Model<DeveloperDto>,
-  ) { }
-
-  async insert(data: DeveloperDto): Promise<DeveloperDto> {
-    const model = new this.userModel(data as DeveloperDto);
-    return await model.save();
-  }
-
-  async createapp(user: any, data: any) {
-    const model = { _id: user.id };
-    const userFound = await this.userModel.findOne(model).exec();
-    if (userFound) {
-      const dataModel = new this.userModel(userFound as DeveloperDto);
-      data.appKey = AES.encrypt(data.name, 'appKeySuper').toString();
-      dataModel.apps.push(data);
-      if (await dataModel.update({ _id: dataModel.id, dataModel })) return data;
-      return null;
-    }
-  }
-
-  async profile(data: any) {
-    const model = { userName: data.userName };
-    const user = await this.userModel.findOne(model).exec();
-    return user;
-  }
-
-  async login(data: any) {
-    const user = await this.validateUser(data.userName, data.password);
-    if (user) {
-      const model = { id: user.id, userName: user.userName };
-      return { access_token: this.jwtService.sign(model) };
-    }
-    return new UnauthorizedException('Not Have Access');
-  }
-
-  async register(data: any) {
+    @InjectModel('Developers') private readonly developerModel: Model<DeveleporDTO>,
+    @InjectModel('Apps') private readonly appModel: Model<AppDTO>,
+    private readonly userService:UsersService
+  ) {}
+  async register(user: any, data:IDeveloperModel ): Promise<DeveleporDTO> {
     try {
-      data.passwordHash = AES.encrypt(data.password, 'appKeySuper').toString();
-      const result = await this.insert(data);
-      if (result)
-        return {
-          access_token: this.jwtService.sign({
-            Id: result.id,
-            userName: result.userName,
-          }),
-        };
-      throw new Error('Registrasi gagal');
+      data.createDate= new Date();
+      data.userId=user.id;
+      const model = new this.developerModel(data);
+      await model.save();
+      var usermodel = await this.userService.findOne({_id:user.id});
+      if(usermodel)
+      {
+        usermodel.roles.push("Developer");
+        usermodel.save();
+      }
+      return model;
     } catch (error) {
-      throw new Error(error);
+      if(error.code===11000)
+          throw new Error("Anda Telah Terdaftar Sebagai Developer");
+      throw new Error(error.message);
     }
   }
 
-  async validateUser(username: string, pass: string): Promise<DeveloperDto> {
-    const model = { userName: username };
-    const user = await this.userModel.findOne(model).exec();
-    const password = AES.decrypt(user.passwordHash, 'appKeySuper').toString(
-      enc.Utf8,
-    );
-    if (user && password === pass) {
-      return user;
+  async addNewApp(userId:string, data:AppDTO){
+    try {
+      var dataFound = await this.developerModel.findOne({userId:userId});
+      //data._id=new ObjectId();
+      data.appKey=this.generateappKey(data.appName);
+      data.userId = userId;
+      const newObj = new  this.appModel(data);
+      if(dataFound){
+        dataFound.apps.push(newObj);
+        return await dataFound.save();
+      }
+      throw new Error("anda belum terdaftar sebagai developer");
+    } catch (error) {
+      throw new Error(error.message);
     }
-    return null;
+  }
+
+  async findAllApps(userId:string): Promise<IUserApplication[]> {
+    try {
+      var dataFound = await this.findOne({userId:userId});
+      if(dataFound)
+      {
+        return dataFound.apps;
+      }
+      throw new Error("anda belum terdaftar sebagai developer");
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  
+  async findOneApp(userId:string,param: any): Promise<IUserApplication> {
+    try {
+      const data = await this.appModel.findById(param);
+      // this.developerModel.apps.find({apps}).exec();
+      //var result =data.apps.find(x=>x._id===param);
+      return data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  
+  async updateOneApp(userId:string, param:any): Promise<boolean> {
+    try {
+      var data = await this.appModel.findById(param);
+      data=param;
+      await data.save();
+      return true;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+ private async findOne(param: any): Promise<DeveleporDTO> {
+    try {
+      const data = await this.developerModel.findOne(param).exec();
+      return data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async updateOne(user: any): Promise<DeveleporDTO> {
+    try {
+      const model = new this.developerModel(user);
+      var result = await this.developerModel.findOneAndUpdate({ userName: user.userName }, user);
+      return result;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+
+  
+  async GenerateNewAppKey(userId:string, param:any): Promise<string> {
+    try {
+      var data = await this.findOne({userId:userId});
+      var result =data.apps.find(x=>x===param);
+      result.appKey=this.generateappKey(result.appName);
+      await data.save();
+      return result.appKey;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+
+  private generateappKey(appName: string): string {
+    return AES.encrypt(appName, jwtConstants.passwordSecret).toString();
   }
 }
+

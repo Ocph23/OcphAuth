@@ -1,61 +1,73 @@
 import {
-  Controller,
-  Request,
-  Post,
-  Body,
-  HttpException,
-  HttpStatus,
-  UseGuards,
-  Get,
-  Param,
+	Controller,
+	Request,
+	Post,
+	UseGuards,
+	Get,
+	Body,
+	Render,
+	HttpException,
+	HttpStatus,
+	Put
 } from '@nestjs/common';
 import { DeveloperService } from './developer.service';
-import { AuthGuard } from '@nestjs/passport';
+import { OcphRoleGuard, OcphGuard } from '../guards/ocphGuard.guard';
 
-@Controller('developer')
+@Controller('api/developer')
 export class DeveloperController {
-  constructor(private readonly service: DeveloperService) {}
+	constructor(private readonly devService: DeveloperService) {}
 
-  @Post('create')
-  async create(@Body() model: any) {
-    try {
-      return await this.service.register(model);
-    } catch (ex) {
-      throw new HttpException(ex.errmsg, HttpStatus.BAD_REQUEST);
-    }
-  }
+	@UseGuards(OcphRoleGuard([ 'Developer' ]))
+	@Get()
+	get(@Request() req) {
+		if (req.user) return this.devService.findAllApps(req.user);
+	}
 
-  @Post('login')
-  async login(@Body() req: any) {
-    return this.service.login(req);
-  }
+	@UseGuards(OcphGuard())
+	@Post('register')
+	registyer(@Request() req) {
+		if (req.body) return this.devService.register(req.user, req.body);
+	}
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('me')
-  getProfile(@Request() req) {
-    return this.service.profile(req.user);
-  }
+	//appps
+	@UseGuards(OcphRoleGuard([ 'Developer' ]))
+	@Post('createapp')
+	createapp(@Request() req) {
+		
+		try {
+			if (req.body) return this.devService.addNewApp(req.user.id, req.body);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('IsLoged')
-  getLoged(@Request() req) {
-    return true;
-  }
+	@UseGuards(OcphRoleGuard([ 'Developer' ]))
+	@Get('apps')
+	getApps(@Request() req) {
+		if (req.user) return this.devService.findAllApps(req.user.id);
+	}
 
-  @UseGuards(AuthGuard('jwt'))
-  @Post('createapp')
-  async createapp(@Request() req) {
-    try {
-      const model = req.body;
-      return await this.service.createapp(req.user, model);
-    } catch (ex) {
-      throw new HttpException(ex.errmsg, HttpStatus.BAD_REQUEST);
-    }
-  }
+	@UseGuards(OcphRoleGuard([ 'Developer' ]))
+	@Get('app/:id')
+	getApp(@Request() req) {
+		try {
+			if (req.user) 
+			return this.devService.findOneApp(req.user.id, req.params.id);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('newpppkey:id')
-  async newAppKey(@Param('id') id) {
-    return `This action returns a #${id} cat`;
-  }
+	@UseGuards(OcphRoleGuard([ 'Developer' ]))
+	@Get('newappkey/:id')
+	getnewkeyApp(@Request() req) {
+		try {
+			if (req.user) {
+				return this.devService.GenerateNewAppKey(req.user.id, req.params.id);
+			}
+			throw new HttpException('Anda Tidak Memiliki Akses', HttpStatus.UNAUTHORIZED);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+		}
+	}
 }

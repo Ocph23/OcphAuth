@@ -1,34 +1,19 @@
-import { Address } from "cluster";
-import { Guid } from "guid-typescript";
 
-export class DeveloperModel{
-    userName: string;
-    passwordHash: string;
-    apps: DeveleporApplication [];
-    developerProfile:DeveloperProfile;
+export interface IDeveloperModel{
+userId:string;
+createDate:Date|string;
+companyName: string;
+author:string;
+email : string;
+apps:[];
 };
 
-export class DeveloperProfile{
-    firstName:string;
-    lastName:string;
-    company:string;
-    address:Address;
-    email : string;
-}
 
-export class DeveleporApplication{
-    id: string;
-    name:string;
-    appKey:string;
-    created:Date |number;
+export interface IUserApplication{
+    createDate: Date|string;
+    appName:string;
+    version:string;
     description:string;
-    constructor() {
-       if(!this.id)
-       {
-        this.id = Guid.create().toString();
-        this.created=Date.now();
-       }
-    }
-
-
+    appKey :string;
+    userId: string, 
 }

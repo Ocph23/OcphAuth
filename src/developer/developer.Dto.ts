@@ -1,10 +1,7 @@
 import { Document } from 'mongoose';
-import { DeveloperProfile, DeveleporApplication } from './developer.model';
+import { IDeveloperModel, IUserApplication } from './developer.model';
+export interface DeveleporDTO extends IDeveloperModel, Document {}
 
-export interface DeveloperDto extends Document {
-    id:string;
-    userName: string;
-    passwordHash: string;
-    apps: DeveleporApplication [],
-    developerProfile:DeveloperProfile;
+export interface AppDTO extends IUserApplication, Document {
+    
 }

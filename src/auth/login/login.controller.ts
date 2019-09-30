@@ -13,6 +13,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../auth.service';
 import { UsersModel } from '../../users/users.model';
+import { OcphGuard,OcphRoleGuard } from '../../guards/ocphGuard.guard';
 
 @Controller('auth')
 export class LoginController {
@@ -28,7 +29,7 @@ export class LoginController {
     return this.authService.login(req);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(OcphGuard())
   @Get('me')
   getProfile(@Request() req) {
     if (req.user && req.user.id != null)
@@ -39,7 +40,7 @@ export class LoginController {
     );
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(OcphGuard())
   @Put('profile')
   putProfile(@Request() req) {
     if (req.user && req.user.id != null)
@@ -50,7 +51,7 @@ export class LoginController {
     );
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(OcphGuard())
   @Get('IsLoged')
   getLoged(@Request() req) {
     return true;

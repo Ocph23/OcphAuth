@@ -4,22 +4,25 @@ import {
   UnauthorizedException,
   HttpException,
   HttpStatus,
+  HttpService,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { AES, enc } from 'crypto-ts';
-import { UsersModel } from '../users/users.model';
+import { UsersModel, IUsersModel } from '../users/users.model';
 
 @Injectable()
 export class AuthService {
+  
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
+    private readonly http:HttpService
   ) {}
 
   async login(user: any) {
     try {
-      const data = await this.validateUser(user.userName, user.password);
+      const data = await this.usersService.validateUser(user.userName, user.password);
       if (data) {
         return {
           access_token: this.jwtService.sign({
@@ -37,6 +40,22 @@ export class AuthService {
     }
   }
 
+   async registerAsDeveloper(data: string) {
+    try {
+      const model = { userName: data};
+      const user:UsersModel = await this.usersService.findOne(model);
+      if(user)
+      {
+        user.role="Developer";
+        const result =await this.putprofile(user);
+        return result;
+      }
+      throw new Error("anda tidak memiliki akses");
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async putprofile(user: UsersModel) {
     try {
       if (user.role !== 'Guest' && user.roles.indexOf('Guest') !== -1) {
@@ -49,9 +68,7 @@ export class AuthService {
         switch (user.role) {
           case 'Student':
             const profileStudent = this.getStudentProfile(
-              user.identityNumber,
-              user.role,
-            );
+              user.identityNumber);
             user.profiles.push(profileStudent);
             user.roles.push(user.role);
             break;
@@ -104,16 +121,12 @@ export class AuthService {
     }
   }
 
-  getStudentProfile(identityNumber: string, typeProfile: string): any {
+  async getStudentProfile(identityNumber: string): Promise<any> {
     try {
-      return {
-        type: typeProfile,
-        NPM: '201511099',
-        Angkata: 2015,
-        Nama: 'Yoseph Kungkung',
-        TempatLahir: 'Palopo',
-        TanggalLahir: new Date(),
-      };
+     var result = await this.http.get("http://restsimak.stimiksepnop.ac.id/api/Mahasiswa/GetDataMahasiswa?npm="+identityNumber)
+      .toPromise();
+      return result.data;
+      
     } catch (error) {
       throw new Error(error.message);
     }
@@ -122,16 +135,13 @@ export class AuthService {
   async register(user: UsersModel) {
     try {
       user.userName = user.email;
+      user.email = user.email.toLocaleLowerCase();
       user.roles = [];
-      user.profiles=[];
       if (user.role) {
         switch (user.role) {
           case 'Student':
-            const profileStudent = this.getStudentProfile(
-              user.identityNumber,
-              user.role,
-            );
-            user.profiles.push(profileStudent);
+            // const profileStudent = this.getStudentProfile(user.identityNumber);
+            // user.profiles.push(profileStudent);
             user.roles.push(user.role);
             break;
           case 'Teacher':
@@ -152,16 +162,16 @@ export class AuthService {
             break;
         }
 
-        const result = await this.usersService.insert(user);
-        if (result)
+        const data = await this.usersService.insert(user);
+        if (data)
           return {
             access_token: this.jwtService.sign({
-              identityNumber: result.identityNumber,
-              firstName: result.firstName,
-              email: result.email,
-              roles: result.roles,
-              id: result.id,
-              userName: result.userName,
+              identityNumber: data.identityNumber,
+              firstName: data.firstName,
+              email: data.email,
+              id: data.id,
+              userName: data.userName,
+              roles: data.roles,
             }),
           };
         return false;
@@ -171,30 +181,15 @@ export class AuthService {
     }
   }
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    try {
-      const model = { userName: username };
-      const user = await this.usersService.findOne(model);
-      const password = AES.decrypt(user.passwordHash, '123456').toString(
-        enc.Utf8,
-      );
-      if (user && password === pass) {
-        return user;
-      }
-      throw Error('You Not Have Access');
-    } catch (error) {
-      throw Error('You Not Have Access');
-    }
-  }
+ 
 
   async profile(data: any) {
     const model = { id: data.userId, userName: data.userName };
     const user = await this.usersService.findOne(model);
-    return user;
+    var res = await this.getStudentProfile(user.identityNumber);
+    var result = res.data[0];
+    return result;
   }
 
-  decript(passwordHash: string): string {
-    var bytes = AES.decrypt(passwordHash, '123456');
-    return bytes.toString(enc.Utf8);
-  }
+  
 }

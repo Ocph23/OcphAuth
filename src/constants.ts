@@ -1,3 +1,5 @@
 export const jwtConstants = {
-    secret: '1234',
+    jwtSecret: '1234',
+    passwordSecret:'123456',
+    appKeySecret:"1234567"
   };
