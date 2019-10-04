@@ -42,7 +42,7 @@ export class DeveloperService {
       data.userId = userId;
       const newObj = new  this.appModel(data);
       if(dataFound){
-        dataFound.apps.push(newObj);
+       // dataFound.apps.push(newObj);
         return await dataFound.save();
       }
       throw new Error("anda belum terdaftar sebagai developer");
@@ -113,9 +113,9 @@ export class DeveloperService {
     try {
       var data = await this.findOne({userId:userId});
       var result =data.apps.find(x=>x===param);
-      result.appKey=this.generateappKey(result.appName);
+     // result.appKey=this.generateappKey(result.appName);
       await data.save();
-      return result.appKey;
+      return null;//result.appKey;
     } catch (error) {
       throw new Error(error.message);
     }
