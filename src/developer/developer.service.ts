@@ -3,9 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AES, enc } from 'crypto-ts';
 import { jwtConstants } from '../constants';
-import { DeveleporDTO, AppDTO } from './developer.dto';
 import { IDeveloperModel, IUserApplication } from './developer.model';
 import { UsersService } from '../users/users.service';
+import { DeveleporDTO, AppDTO } from './developer.dto';
 
 @Injectable()
 export class DeveloperService {
